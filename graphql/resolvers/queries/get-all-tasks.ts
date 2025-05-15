@@ -1,11 +1,9 @@
-import { Task } from "@/graphql/schemas/task.schema";
+import Task from "@/models/Task";
+import exp from "constants";
 
-export const getAllTasks = async () => {
-  try {
-    const tasks = await Task.find({}); 
-    return tasks;
-  } catch (error) {
-    console.error("Error fetching all tasks:", error);
-    throw new Error("Failed to fetch all tasks.");
-  }
-};
+const getAllTasks = async (_: any, { userId }: any) => {
+    return await Task.find({ userId }); // safer and makes more sense
+}
+
+
+export default getAllTasks;

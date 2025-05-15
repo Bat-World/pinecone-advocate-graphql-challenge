@@ -1,23 +1,73 @@
-import { gql } from "graphql-tag";
+import { gql } from "apollo-server-cloud-functions";
+
 
 export const typeDefs = gql`
+
   type Task {
+
     _id: ID!
+
     taskName: String!
-    description: String
-    status: String
+
+    description: String!
+
+    isDone: Boolean!
+
+    priority: Int!
+
+    tags: [String]
+
+    userId: String!
+
+    createdAt: String
+
+    updatedAt: String
+
   }
+ 
+  type Query {
 
- type Query {
-  helloQuery: String
-  getAllTasks: [Task]
-  getFinishedTasks: [Task]
-}
+    getUserDoneTasksLists(userId: String!): [Task]
+    getAllTasks(userId: String!): [Task]
+    
 
-
+  }
+ 
   type Mutation {
-    sayHello(name: String!): String
-    addTask(taskName: String!, description: String, status: String): Task
-    updateTask(taskName: String!, description: String, status: String): Task
+
+    addTask(
+
+      taskName: String!
+
+      description: String!
+
+      priority: Int!
+
+      tags: [String]
+
+      userId: String!
+
+    ): Task
+ 
+    updateTask(
+
+      taskId: ID!
+
+      taskName: String
+
+      description: String
+
+      priority: Int
+
+      isDone: Boolean
+
+      tags: [String]
+
+      userId: String!
+
+    ): Task
+
   }
+
 `;
+ 

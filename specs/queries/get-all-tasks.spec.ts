@@ -1,44 +1,51 @@
-// specs/queries/get-all-tasks.spec.ts
-import { createTestClient, stopTestClient } from "../utils/createTestClient";
-import { gql } from "graphql-tag";
-import { Task } from "@/graphql/schemas/task.schema";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import Task from "@/models/Task";
+import getAllTasks from "@/graphql/resolvers/queries/get-all-tasks";
 
-const GET_ALL_TASKS = gql`
-  query GetAllTasks {
-    getAllTasks {
-      taskName
-      status
-    }
-  }
-`;
+dotenv.config({ path: ".env" });
+jest.setTimeout(20000);
 
-describe("getAllTasks query", () => {
-  let client: any;
+beforeAll(async () => {
+  await mongoose.connect(process.env.MONGODB_URL!);
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
+});
+
+describe("Get All Tasks Query", () => {
+  const userId = "user-all-test";
+  const unique = Date.now();
 
   beforeAll(async () => {
-    client = await createTestClient();
-    await Task.deleteMany({});
     await Task.create([
-      { taskName: "Task One", status: "active" },
-      { taskName: "Task Two", status: "finished" },
+      {
+        taskName: "Task 1 " + unique,
+        description: "Description 1",
+        priority: 1,
+        tags: ["tag1"],
+        isDone: false,
+        userId,
+      },
+      {
+        taskName: "Task 2 " + unique,
+        description: "Description 2",
+        priority: 2,
+        tags: ["tag2"],
+        isDone: true,
+        userId,
+      },
     ]);
   });
 
-  afterAll(async () => {
-    await Task.deleteMany({});
-    await stopTestClient();
-  });
+  it("should return all tasks for the user", async () => {
+    const tasks = await getAllTasks({}, { userId });
 
-  it("should return all tasks", async () => {
-    const res = await client.executeOperation({ query: GET_ALL_TASKS });
-
-    expect(res.errors).toBeUndefined();
-    expect(res.data?.getAllTasks?.length).toBe(2);
-    expect(res.data?.getAllTasks).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ taskName: "Task One", status: "active" }),
-        expect.objectContaining({ taskName: "Task Two", status: "finished" }),
-      ])
-    );
+    expect(Array.isArray(tasks)).toBe(true);
+    expect(tasks.length).toBeGreaterThanOrEqual(2);
+    tasks.forEach((task) => {
+      expect(task.userId).toBe(userId);
+    });
   });
 });
