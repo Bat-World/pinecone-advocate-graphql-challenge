@@ -1,32 +1,43 @@
+// specs/mutations/add-task.spec.ts
 import { addTask } from "@/graphql/resolvers/mutations/add-task";
+import { Task } from "@/graphql/schemas/task.schema";
+
+jest.mock("@/graphql/schemas/task.schema");
 
 describe("addTask resolver", () => {
-  it("should insert a task and return it", async () => {
-    const mockInsertOne = jest.fn().mockResolvedValue({ insertedId: "abc123" });
-    const mockDb = {
-      collection: jest.fn().mockReturnValue({ insertOne: mockInsertOne }),
+  const mockInput = {
+    taskName: "Test Task",
+    description: "Test description",
+    status: "active"
+  };
+
+  beforeEach(() => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("should create a new task and return it", async () => {
+    const mockCreatedTask = {
+      _id: "mock-id",
+      ...mockInput
     };
 
-    const args = {
-      input: {
-        title: "Test task",
-        description: "A test description",
-      },
-    };
+    (Task.create as jest.Mock).mockResolvedValue(mockCreatedTask);
 
-    const result = await addTask({}, args, { db: mockDb });
+    const result = await addTask(null, mockInput);
 
-    expect(mockDb.collection).toHaveBeenCalledWith("tasks");
-    expect(mockInsertOne).toHaveBeenCalledWith({
-      title: "Test task",
-      description: "A test description",
-      completed: false,
-    });
-    expect(result).toEqual({
-      id: "abc123",
-      title: "Test task",
-      description: "A test description",
-      completed: false,
-    });
+    expect(Task.create).toHaveBeenCalledWith(mockInput);
+    expect(result).toEqual(mockCreatedTask);
+  });
+
+  it("should throw an error if creation fails", async () => {
+    (Task.create as jest.Mock).mockRejectedValue(new Error("Database error"));
+
+    await expect(addTask(null, mockInput)).rejects.toThrow("Failed to create task");
+    expect(Task.create).toHaveBeenCalledWith(mockInput);
   });
 });

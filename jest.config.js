@@ -1,22 +1,23 @@
-// import type { Config } from 'jest'
 const nextJest = require('next/jest')
-const defaults = require('jest-config')
 
 const createJestConfig = nextJest({
-  // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
   dir: './',
 })
 
-// Add any custom config to be passed to Jest
 const config = {
   moduleDirectories: ['node_modules', '<rootDir>/'],
   testEnvironment: 'node',
-  rootDir: './',
   preset: "ts-jest",
   transform: {
     "^.+\\.(ts|tsx|js|jsx)$": "ts-jest"
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+
+  // ✅ This is the fix
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/$1"
+  },
+
   collectCoverage: true,
   collectCoverageFrom: [
     '!**/*.{js,jsx,ts,tsx}',

@@ -1,23 +1,54 @@
+// specs/mutations/update-task.spec.ts
+import { updateTask } from "@/graphql/resolvers/mutations/update-task";
 import { Task } from "@/graphql/schemas/task.schema";
-import { TaskInput } from "@/graphql/types/task";
 
-export const updateTask = async (_: any, args: TaskInput) => {
-  try {
-    const { taskName, description, status = "active" } = args;
+jest.mock("@/graphql/schemas/task.schema");
 
-    const updatedTask = await Task.findOneAndUpdate(
-      { taskName }, 
-      { description, status },
-      { new: true } 
+describe("updateTask resolver", () => {
+  const mockInput = {
+    taskName: "Test Task",
+    description: "Updated description",
+    status: "finished"
+  };
+
+  beforeEach(() => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("should update and return the task if found", async () => {
+    const mockUpdatedTask = {
+      _id: "123",
+      ...mockInput
+    };
+
+    (Task.findOneAndUpdate as jest.Mock).mockResolvedValue(mockUpdatedTask);
+
+    const result = await updateTask(null, mockInput);
+    expect(result).toEqual(mockUpdatedTask);
+    expect(Task.findOneAndUpdate).toHaveBeenCalledWith(
+      { taskName: mockInput.taskName },
+      {
+        description: mockInput.description,
+        status: mockInput.status,
+      },
+      { new: true }
     );
+  });
 
-    if (!updatedTask) {
-      throw new Error("Task not found");
-    }
+  it("should throw an error if task is not found", async () => {
+    (Task.findOneAndUpdate as jest.Mock).mockResolvedValue(null);
 
-    return updatedTask;
-  } catch (error) {
-    console.error("Error updating task:", error);
-    throw new Error("Failed to update task");
-  }
-};
+    await expect(updateTask(null, mockInput)).rejects.toThrow("Failed to update task");
+  });
+
+  it("should throw an error if database fails", async () => {
+    (Task.findOneAndUpdate as jest.Mock).mockRejectedValue(new Error("Database error"));
+
+    await expect(updateTask(null, mockInput)).rejects.toThrow("Failed to update task");
+  });
+});

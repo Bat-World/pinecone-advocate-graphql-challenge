@@ -8,11 +8,12 @@ export const typeDefs = gql`
     status: String
   }
 
-  type Query {
-    helloQuery: String
-    getAllTasks: [Task]
-    getFinishedTasksLists: [Task]
-  }
+ type Query {
+  helloQuery: String
+  getAllTasks: [Task]
+  getFinishedTasks: [Task]
+}
+
 
   type Mutation {
     sayHello(name: String!): String

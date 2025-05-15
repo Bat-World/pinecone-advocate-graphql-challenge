@@ -11,7 +11,7 @@ export const resolvers = {
   Query: {
     helloQuery,
     getAllTasks,
-    getFinishedTasksLists: getFinishedTasks, 
+    getFinishedTasks,
   },
   Mutation: {
     sayHello,
@@ -19,4 +19,5 @@ export const resolvers = {
     updateTask,
   },
 };
+
 

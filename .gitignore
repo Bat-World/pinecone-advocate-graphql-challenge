@@ -12,3 +12,4 @@ coverage
 .swc/**/*
 .vercel
 .env
+.env.local
