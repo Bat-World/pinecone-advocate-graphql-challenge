@@ -78,7 +78,7 @@ describe("Update Task Mutation", () => {
   it("should catch validation error in addTask (coverage)", async () => {
     const badInput = {
       taskName: "SameText",
-      description: "short", // will trigger minlength error before same-text check
+      description: "short", 
       priority: 1,
       userId: "force-error-user"
     };
@@ -90,7 +90,7 @@ describe("Update Task Mutation", () => {
   it("should catch and throw validation error (for catch block coverage)", async () => {
     const input = {
       taskName: "SameText10",
-      description: "SameText10", // triggers custom validator
+      description: "SameText10", 
       priority: 2,
       userId: "user-catch-test"
     };
@@ -105,16 +105,14 @@ describe("Update Task Mutation", () => {
       priority: 2,
       userId: "generic-error-user"
     };
- 
-    // Save function-г mock-лож алдаа шидүүлж байна
+
     const originalSave = mongoose.models.Task.prototype.save;
     mongoose.models.Task.prototype.save = jest.fn().mockImplementation(() => {
-      throw {}; // No message
+      throw {};
     });
  
     await expect(addTask({}, input)).rejects.toThrow("Something went wrong.");
  
-    // mock-ийг нь сэргээж байна
     mongoose.models.Task.prototype.save = originalSave;
   });
 });
