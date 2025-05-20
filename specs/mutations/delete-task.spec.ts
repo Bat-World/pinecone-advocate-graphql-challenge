@@ -16,12 +16,15 @@ afterAll(async () => {
 
 describe("deleteTask", () => {
   it("should delete a task successfully", async () => {
-    const task = await addTask({}, {
-      taskName: "To be deleted",
-      description: "This task is valid",
-      priority: 1,
-      userId: "test-user",
-    });
+    const task = await addTask(
+      {},
+      {
+        taskName: "To be deleted",
+        description: "This task is valid",
+        priority: 1,
+        userId: "test-user",
+      }
+    );
 
     const result = await deleteTask({}, { taskId: task._id });
     expect(result.message).toBe("Task deleted successfully.");
@@ -29,16 +32,17 @@ describe("deleteTask", () => {
   });
 
   it("should throw error if task not found", async () => {
-    // Use a valid ObjectId that doesn't exist
     const nonExistentId = new mongoose.Types.ObjectId().toString();
 
-    await expect(deleteTask({}, { taskId: nonExistentId }))
-      .rejects.toThrow("Task not found.");
+    await expect(deleteTask({}, { taskId: nonExistentId })).rejects.toThrow(
+      "Task not found."
+    );
   });
 
   it("should throw error for invalid task ID format", async () => {
-    await expect(deleteTask({}, { taskId: "invalid-id" }))
-      .rejects.toThrow("Something went wrong.");
+    await expect(deleteTask({}, { taskId: "invalid-id" })).rejects.toThrow(
+      "Something went wrong."
+    );
   });
 
   it("should throw generic error on unexpected failure", async () => {
@@ -46,7 +50,8 @@ describe("deleteTask", () => {
       throw new Error("Unexpected DB error");
     });
 
-    await expect(deleteTask({}, { taskId: "000000000000000000000000" }))
-      .rejects.toThrow("Something went wrong.");
+    await expect(
+      deleteTask({}, { taskId: "000000000000000000000000" })
+    ).rejects.toThrow("Something went wrong.");
   });
 });

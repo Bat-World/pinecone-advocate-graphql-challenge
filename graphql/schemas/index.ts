@@ -1,10 +1,7 @@
 import { gql } from "apollo-server-cloud-functions";
 
-
 export const typeDefs = gql`
-
   type Task {
-
     _id: ID!
 
     taskName: String!
@@ -22,21 +19,15 @@ export const typeDefs = gql`
     createdAt: String
 
     updatedAt: String
-
   }
- 
-  type Query {
 
+  type Query {
     getUserDoneTasksLists(userId: String!): [Task]
     getAllTasks(userId: String!): [Task]
-    
-
   }
- 
+
   type Mutation {
-
     addTask(
-
       taskName: String!
 
       description: String!
@@ -46,11 +37,9 @@ export const typeDefs = gql`
       tags: [String]
 
       userId: String!
-
     ): Task
- 
-    updateTask(
 
+    updateTask(
       taskId: ID!
 
       taskName: String
@@ -64,10 +53,7 @@ export const typeDefs = gql`
       tags: [String]
 
       userId: String!
-
     ): Task
-
+    deleteTask(taskId: ID!, userId: String!): Task
   }
-
 `;
- 

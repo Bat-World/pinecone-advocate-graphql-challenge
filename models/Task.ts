@@ -1,6 +1,5 @@
-
 import mongoose from "mongoose";
- 
+
 const TaskSchema = new mongoose.Schema({
   taskName: {
     type: String,
@@ -16,7 +15,7 @@ const TaskSchema = new mongoose.Schema({
         return value !== this.taskName;
       },
       message: "Description cannot be the same as task name.",
-    }
+    },
   },
   isDone: {
     type: Boolean,
@@ -40,7 +39,6 @@ const TaskSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: [true, "User ID is required."],
-    
   },
   createdAt: {
     type: Date,
@@ -51,11 +49,9 @@ const TaskSchema = new mongoose.Schema({
     default: () => new Date(),
   },
 });
- 
+
 TaskSchema.index({ taskName: 1, userId: 1 }, { unique: true });
- 
+
 const Task = mongoose.models.Task || mongoose.model("Task", TaskSchema);
- 
+
 export default Task;
- 
- 
