@@ -25,7 +25,6 @@ describe("deleteTask", () => {
         userId: "test-user",
       }
     );
-
     const result = await deleteTask({}, { taskId: task._id });
     expect(result.message).toBe("Task deleted successfully.");
     expect(result.task._id.toString()).toBe(task._id.toString());
